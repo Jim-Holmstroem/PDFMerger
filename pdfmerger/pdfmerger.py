@@ -7,6 +7,7 @@ import BaseHTTPServer as httpserver
 from functools import partial, reduce
 import operator as op
 
+from collections import OrderedDict
 #import ghostscript #really buggy didn't get it to work properly.. NOTE you have to have ghostscript installed
 from subprocess import call
 from tempfile import NamedTemporaryFile
@@ -28,6 +29,7 @@ class Handler(httpserver.BaseHTTPRequestHandler):
         self.send_header('Content-type','text/plain')
         self.end_headers()
         self.wfile.write('GET')
+
     def do_POST(self):
         form = cgi.FieldStorage(
             fp=self.rfile,
@@ -61,11 +63,17 @@ class Handler(httpserver.BaseHTTPRequestHandler):
             def is_file(field_item):
                 return bool(field_item.filename)
 
+            sorted_input = OrderedDict(
+                sorted(
+                    dict(form).iteritems()
+                )
+            ) #NOTE form has them unsorted, could perhaps be inorder if all input fields have the same name (gets a list instead) #NOTE this is ugly since type(form) is ugly
+            
             temp_input = map(
                 prepare_pdf_file,
                 filter(
                     is_file,
-                    dict(form).values()
+                    sorted_input.values()
                 )
             )
             if(temp_input<1):
@@ -97,7 +105,7 @@ class Handler(httpserver.BaseHTTPRequestHandler):
             
             self.wfile.write(temp_output.read())
  
-        except Exception as e:
+        except TypeError as e:
             print("Error:", e)
             self.send_response(500)
             self.end_headers()
