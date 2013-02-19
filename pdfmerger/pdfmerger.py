@@ -101,6 +101,7 @@ class Handler(httpserver.BaseHTTPRequestHandler):
         
             self.send_response(200)
             self.send_header("Content-type", "application/pdf")
+            self.send_header("Content-disposition", "attachment; filename=output.pdf") #NOTE clients need not to implement this, but it's mentioned in RFC and all modern browsers has it
             self.end_headers()
             
             self.wfile.write(temp_output.read())
