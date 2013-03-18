@@ -13,7 +13,7 @@ from collections import OrderedDict
 from subprocess import call
 from tempfile import NamedTemporaryFile
 
-HOSTNAME, PORT = '192.168.1.85', 80
+HOSTNAME, PORT = 'localhost', 80
 
 def unpack(f, a):
     return f(*a)
